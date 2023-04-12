@@ -3,6 +3,8 @@
 namespace Contributte\ImageStorage\DI;
 
 use Contributte\ImageStorage\ImageStorage;
+use Contributte\ImageStorage\Latte\LatteExtension;
+use Contributte\ImageStorage\Latte\Macros;
 use Latte\Engine;
 use Nette;
 use Nette\DI\CompilerExtension;
@@ -54,7 +56,10 @@ class ImageStorageExtension extends CompilerExtension
 				$latteFactory->getResultDefinition()
 					->addSetup('Contributte\ImageStorage\Macros\Macros::install(?->getCompiler())', ['@self']);
 			} else {
-				// todo
+				$latteExtension = $builder->addDefinition($this->prefix('latte.extension'))
+					->setFactory(LatteExtension::class);
+				$latteFactory->getResultDefinition()
+					->addSetup('addExtension', [$latteExtension]);
 			}
 		}
 	}
