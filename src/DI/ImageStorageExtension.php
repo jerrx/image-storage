@@ -3,6 +3,7 @@
 namespace Contributte\ImageStorage\DI;
 
 use Contributte\ImageStorage\ImageStorage;
+use Latte\Engine;
 use Nette;
 use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
@@ -42,11 +43,20 @@ class ImageStorageExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		/** @var Nette\DI\Definitions\FactoryDefinition $latteFactory */
-		$latteFactory = $builder->getDefinition('latte.latteFactory');
-		assert($latteFactory instanceof Nette\DI\Definitions\FactoryDefinition);
-		$latteFactory->getResultDefinition()
-			->addSetup('Contributte\ImageStorage\Macros\Macros::install(?->getCompiler())', ['@self']);
+		$latteFactoryName = $builder->getByType(Nette\Bridges\ApplicationLatte\ILatteFactory::class);
+
+		if ($latteFactoryName !== null) {
+			/** @var \Nette\DI\Definitions\FactoryDefinition $latteFactory */
+			$latteFactory = $builder->getDefinition($latteFactoryName);
+
+			/** @phpstan-ignore-next-line */
+			if (version_compare(Engine::VERSION, '3', '<')) {
+				$latteFactory->getResultDefinition()
+					->addSetup('Contributte\ImageStorage\Macros\Macros::install(?->getCompiler())', ['@self']);
+			} else {
+				// todo
+			}
+		}
 	}
 
 }
