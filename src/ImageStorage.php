@@ -183,10 +183,16 @@ class ImageStorage
 	/**
 	 * @param mixed $args
 	 */
-	public function fromIdentifier($args): Image
+	public function fromIdentifier($args, $args2 = null): Image
 	{
 		if (!is_array($args)) {
 			$args = [$args];
+		}
+
+		if (is_array($args2)) {
+			foreach ($args2 as $arg2) {
+				$args[] = $arg2;
+			}
 		}
 
 		$identifier = $args[0];
